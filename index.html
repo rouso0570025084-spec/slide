@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<body style="margin:0; overflow:hidden;">
+  <iframe id="viewer" width="100%" height="100%"></iframe>
+
+  <script>
+    const USER = "rous0570025084-spec";
+    const REPO = "slide";
+    const PATH = "";
+
+    let list = [];
+    let index = 0;
+
+    async function load() {
+      const url = `https://api.github.com/repos/${USER}/${REPO}/contents/${PATH}`;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      list = data
+        .filter(file => file.name.endsWith(".pdf"))
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map(file => `https://raw.githubusercontent.com/${USER}/${REPO}/main/${file.path}`);
+    }
+
+    function show() {
+      if (list.length === 0) return;
+
+      document.getElementById("viewer").src = list[index];
+      index = (index + 1) % list.length;
+
+      setTimeout(show, 8000);
+    }
+
+    load().then(show);
+  </script>
+</body>
+</html>
